@@ -72,8 +72,10 @@ public class Controller {
 
         if (aidToggle.isSelected()) {
             userData.setAidActivated(true);
+            GameControllerSingleton.getInstance().getViewController().helpToggle.setSelected(true);
         } else {
             userData.setAidActivated(false);
+            GameControllerSingleton.getInstance().getViewController().helpToggle.setSelected(false);
         }
 
         NetworkHandlerSingleton handler = NetworkHandlerSingleton.getHandler();

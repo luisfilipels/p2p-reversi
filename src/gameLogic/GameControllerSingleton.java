@@ -12,7 +12,7 @@ public class GameControllerSingleton {
 
     private static GameControllerSingleton instance;
 
-    Controller viewController;
+    private Controller viewController;
 
     // The working board is the board used to display information to the player
     private char[][] workingBoard = new char[8][8];
@@ -45,6 +45,10 @@ public class GameControllerSingleton {
         undoBoard[3][4] = 'b';
         undoBoard[4][3] = 'b';
         undoBoard[4][4] = 'w';
+    }
+
+    public Controller getViewController() {
+        return viewController;
     }
 
     public static GameControllerSingleton getInstance(Controller controller) {
