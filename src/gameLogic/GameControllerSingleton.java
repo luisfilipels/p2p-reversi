@@ -100,8 +100,16 @@ public class GameControllerSingleton {
         viewController.updateBoard();
     }
 
-    // Called after every turn ends. Checks if one or the other player won the game.
-    private char checkVictory() {
+    private char checkBoardFullVictory() {
+        int[] count = getColorCount();
+        if (count[0] + count[1] == 64) {
+            if (count[0] == count[1]) return 't';
+            if (count[0] > count[1]) return 'w';
+            else return 'b';
+        } else return ' ';
+    }
+
+    private int[] getColorCount() {
         int countB = 0;
         int countW = 0;
         for (int r = 0; r < 8; r++) {
@@ -110,12 +118,38 @@ public class GameControllerSingleton {
                 if (workingBoard[r][c] == 'b') countB++;
             }
         }
-        if (countB == 0) return 'w';
-        if (countW == 0) return 'b';
-        if (countB + countW == 64) {
-            if (countB > countW) return 'b';
-            else return 'w';
-        } else return ' ';
+        return new int[] {countW, countB};
+    }
+
+    private boolean nextPlayerCanMove() {
+        char myColor = SessionDataSingleton.getInstance().getUserColor();
+        char otherColor = myColor == 'w' ? 'b' : 'w';
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                if (workingBoard[r][c] != ' ') continue;
+                for (int deltaR = -1; deltaR <= 1; deltaR++) {
+                    for (int deltaC = -1; deltaC <= 1; deltaC++) {
+                        if (deltaC == 0 && deltaR == 0) continue;
+                        if (findOtherPiece(r, c, deltaR, deltaC, otherColor)) return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // Called after every turn ends. Checks if one or the other player won the game.
+    private char checkVictory() {
+        char boardFullVictory = checkBoardFullVictory();
+        if (boardFullVictory != ' ') return boardFullVictory;
+
+        if (nextPlayerCanMove()) return ' ';
+        else {
+            int[] count = getColorCount();
+            if (count[0] == count[1]) return 't';
+            if (count[0] > count[1]) return 'w';
+            else return 'b';
+        }
     }
 
     public void localUndo() {
@@ -137,6 +171,11 @@ public class GameControllerSingleton {
             NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("endturn");
         }
         else {
+            if (victorious == 't') {
+                tieGame();
+                NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("tie");
+                return;
+            }
             char myColor = SessionDataSingleton.getInstance().getUserColor();
             if (victorious == myColor) {
                 winGame();
@@ -159,9 +198,9 @@ public class GameControllerSingleton {
         viewController.setStatusToDefeat();
     }
 
-    public void winGame() {
-        viewController.setStatusToVictory();
-    }
+    public void winGame() { viewController.setStatusToVictory(); }
+
+    public void tieGame() { viewController.setStatusToTie(); }
 
     public void closeAllPopups() {
         for (Stage s : openStages) {

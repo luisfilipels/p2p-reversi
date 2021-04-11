@@ -13,6 +13,7 @@ import javafx.geometry.HPos;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import utils.Piece;
+import utils.SessionDataSingleton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,9 @@ public class Controller {
     @FXML
     public Text statusText;
 
+    @FXML
+    public CheckBox helpToggle;
+
     private GameControllerSingleton gameController;
 
     // Used to easily get the pieces in the board by their coordinates
@@ -67,6 +71,10 @@ public class Controller {
         gameController = GameControllerSingleton.getInstance(this);
         endTurnButton.setText("Aguardando");
         endTurnButton.setDisable(true);
+
+        SessionDataSingleton userData = SessionDataSingleton.getInstance();
+
+        helpToggle.setSelected(userData.isAidActivated());
 
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
@@ -92,8 +100,15 @@ public class Controller {
     }
 
     @FXML
+    void handleHelpToggle() {
+        SessionDataSingleton userData = SessionDataSingleton.getInstance();
+
+        userData.setAidActivated(helpToggle.isSelected());
+    }
+
+    @FXML
     void handleEndTurnButton() {
-        if (statusSquare.getFill() == Color.GREEN || statusSquare.getFill() == Color.RED) {
+        if (statusSquare.getFill() == Color.GREEN || statusSquare.getFill() == Color.RED || statusSquare.getFill() == Color.ORANGE) {
             // If the status square has one of these colors, then the game has ended. If this is the the case,
             // then the end turn button becomes a button for restarting the game.
             System.out.println("Trying to restart game");
@@ -106,7 +121,7 @@ public class Controller {
 
     @FXML
     void handleQuitButton() {
-        if (statusSquare.getFill() == Color.GREEN || statusSquare.getFill() == Color.RED) return;
+        if (statusSquare.getFill() == Color.GREEN || statusSquare.getFill() == Color.RED || statusSquare.getFill() == Color.ORANGE) return;
         gameController.loseGame();
         NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("defeat");
     }
@@ -135,6 +150,13 @@ public class Controller {
         endTurnButton.setText("Reiniciar jogo");
     }
 
+    public void setStatusToTie() {
+        statusSquare.setFill(Color.ORANGE);
+        statusText.setText("Empate! Mais sorte da próxima!");
+        endTurnButton.setDisable(false);
+        endTurnButton.setText("Reiniciar jogo");
+    }
+
     // Gets the current state of the game from the game controller, and updates the view accordingly.
     public void updateBoard() {
         for (int r = 0; r < 8; r++) {
@@ -144,7 +166,7 @@ public class Controller {
                 if (state == ' ') {
                     currentPiece.setFill(Color.TRANSPARENT);
                 } else if (state == 'w') {
-                    currentPiece.setFill(Color.GREY);
+                    currentPiece.setFill(Color.WHITE);
                 } else {
                     currentPiece.setFill(Color.BLACK);
                 }

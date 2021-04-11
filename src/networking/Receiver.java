@@ -68,6 +68,12 @@ public class Receiver implements Runnable {
                     gameController.loseGame();
                 }
             });
+            case "tie" -> Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameController.tieGame();
+                }
+            });
         }
     }
 
