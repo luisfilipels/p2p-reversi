@@ -33,7 +33,6 @@ public class Receiver implements Runnable {
                 char color = parts[3].charAt(0);
                 int r = position.charAt(0) - '0';
                 int c = position.charAt(2) - '0';
-                System.out.println("Setting position " + c + ", " + r + " with color " + color);
                 gameController.forceSetBoardPosition(r, c, color);
             }
             case "endturn" -> Platform.runLater(new Runnable() {

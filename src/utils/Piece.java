@@ -16,7 +16,6 @@ public class Piece extends Circle {
         this.gameController = controller;
 
         this.setOnMouseClicked(mouseEvent -> {
-            System.out.println("Clicked on position " + c + ", " + r);
             gameController.setBoardPosition(r,c);
         });
     }

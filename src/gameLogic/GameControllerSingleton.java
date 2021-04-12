@@ -302,7 +302,6 @@ public class GameControllerSingleton {
                         sendRemoteUndo();
                         Thread.sleep(20);
                         sendRemoteUndo();
-                        System.out.println("Setting " + result.size() + " positions");
                         workingBoard[r][c] = userData.getUserColor();
                         NetworkHandlerSingleton.getHandler().sendGameMoveMessageToSender(r,c);
                         Thread.sleep(60);
