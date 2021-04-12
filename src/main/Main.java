@@ -25,7 +25,7 @@ public class Main extends Application {
         Parent root2 = loader.load();
         popup.setTitle("Leitura de dados");
         popup.setResizable(false);
-        popup.setScene(new Scene(root2, 400, 300));
+        popup.setScene(new Scene(root2, 400, 450));
         popup.show();
         popup.setAlwaysOnTop(true);
         popup.toFront();

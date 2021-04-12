@@ -20,6 +20,12 @@ public class Controller {
     private TextField userNameField;
 
     @FXML
+    private TextField inPort;
+
+    @FXML
+    private TextField outPort;
+
+    @FXML
     private Button confirmButton;
 
     @FXML
@@ -59,15 +65,24 @@ public class Controller {
         userData.setRemoteAddress(remoteIPString);
 
         if (whiteToggle.isSelected()) {
-            userData.setSendPort(1024);
-            userData.setReceivePort(1025);
+            if (outPort.getText().trim().equals("")) userData.setSendPort(1024);
+            else userData.setSendPort(Integer.parseInt(outPort.getText().trim()));
+
+            if (inPort.getText().trim().equals("")) userData.setReceivePort(1025);
+            else userData.setReceivePort(Integer.parseInt(inPort.getText().trim()));
+
             userData.setUserColor('w');
             GameControllerSingleton.getInstance().startTurn();
         } else {
-            userData.setSendPort(1025);
-            userData.setReceivePort(1024);
+
+            if (outPort.getText().trim().equals("")) userData.setSendPort(1025);
+            else userData.setSendPort(Integer.parseInt(outPort.getText().trim()));
+
+            if (inPort.getText().trim().equals("")) userData.setReceivePort(1024);
+            else userData.setReceivePort(Integer.parseInt(inPort.getText().trim()));
+
             userData.setUserColor('b');
-            GameControllerSingleton.getInstance().endTurn();
+            GameControllerSingleton.getInstance().localEndTurn();
         }
 
         if (aidToggle.isSelected()) {

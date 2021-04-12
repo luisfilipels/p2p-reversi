@@ -164,6 +164,20 @@ public class GameControllerSingleton {
         NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("undo");
     }
 
+    public void startTurn() {
+        isTurn = true;
+        viewController.endTurnButton.setDisable(false);
+        viewController.endTurnButton.setText("Encerrar rodada");
+        viewController.setStatusToPlaying();
+    }
+
+    public void localEndTurn() {
+        isTurn = false;
+        viewController.endTurnButton.setText("Aguardando");
+        viewController.endTurnButton.setDisable(true);
+        viewController.setStatusToWaiting();
+    }
+
     public void endTurn() {
         isTurn = false;
         viewController.endTurnButton.setText("Aguardando");
@@ -189,13 +203,6 @@ public class GameControllerSingleton {
                 NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("defeat");
             }
         }
-    }
-
-    public void startTurn() {
-        isTurn = true;
-        viewController.endTurnButton.setDisable(false);
-        viewController.endTurnButton.setText("Encerrar rodada");
-        viewController.setStatusToPlaying();
     }
 
     public void loseGame() {
