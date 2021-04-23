@@ -12,19 +12,17 @@ public class NetworkHandlerSingleton {
     private Sender sender;
     private Receiver receiver;
 
-    DatagramSocket socket;
-
     private Thread t1;
     private Thread t2;
 
     private NetworkHandlerSingleton() {
-        try {
+        /*try {
             socket = new DatagramSocket(SessionDataSingleton.getInstance().getReceivePort());
             sender = new Sender(socket);
             receiver = new Receiver(socket);
         } catch (SocketException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public static NetworkHandlerSingleton getHandler() {

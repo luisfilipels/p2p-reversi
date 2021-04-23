@@ -2,8 +2,6 @@ package networking;
 
 import utils.SessionDataSingleton;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.Semaphore;
 
@@ -15,11 +13,11 @@ public class Sender implements Runnable{
     Semaphore s = new Semaphore(0);
 
     // Reference to the socket created by NetworkHandlerSingleton
-    DatagramSocket socket;
+    //DatagramSocket socket;
 
-    Sender(DatagramSocket socket) {
+    /*Sender(DatagramSocket socket) {
         this.socket = socket;
-    }
+    }*/
 
     private String stringToSend;
     public void setStringToSend(String string) {
@@ -41,7 +39,7 @@ public class Sender implements Runnable{
 
     @Override
     public void run() {
-        try {
+        /*try {
             InetAddress server = InetAddress.getByName(SessionDataSingleton.getInstance().getRemoteAddress());
             int port = SessionDataSingleton.getInstance().getSendPort();
 
@@ -53,7 +51,7 @@ public class Sender implements Runnable{
             }
         } catch (Exception e) {
 
-        }
+        }*/
     }
 
 }

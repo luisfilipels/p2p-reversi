@@ -4,17 +4,14 @@ import gameLogic.GameControllerSingleton;
 import javafx.application.Platform;
 import main.Controller;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-
 public class Receiver implements Runnable {
 
     // Reference to the socket created by NetworkHandlerSingleton
-    DatagramSocket socket;
+    //DatagramSocket socket;
 
-    Receiver(DatagramSocket socket) {
+    /*Receiver(DatagramSocket socket) {
         this.socket = socket;
-    }
+    }*/
 
     void handleChat(String[] parts) {
         Controller.logMessage(parts[1] + ": " + parts[2]);
@@ -78,7 +75,7 @@ public class Receiver implements Runnable {
 
     @Override
     public void run() {
-        byte[] buffer = new byte[1000]; // Cria um buffer local
+        /*byte[] buffer = new byte[1000]; // Cria um buffer local
         try {
             DatagramPacket pacote = new DatagramPacket(buffer, buffer.length);
 
@@ -98,7 +95,7 @@ public class Receiver implements Runnable {
 
                 pacote.setLength(buffer.length);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {}*/
     }
 
 }
