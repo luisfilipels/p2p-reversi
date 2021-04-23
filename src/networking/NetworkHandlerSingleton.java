@@ -12,9 +12,6 @@ public class NetworkHandlerSingleton {
     private Sender sender;
     private Receiver receiver;
 
-    private Thread t1;
-    private Thread t2;
-
     private NetworkHandlerSingleton() {
         /*try {
             socket = new DatagramSocket(SessionDataSingleton.getInstance().getReceivePort());
@@ -61,11 +58,11 @@ public class NetworkHandlerSingleton {
     }
 
     public void start() {
-        t1 = new Thread(sender);
+        /*t1 = new Thread(sender);
         t2 = new Thread(receiver);
 
         t1.start();
-        t2.start();
+        t2.start();*/
     }
 
 }

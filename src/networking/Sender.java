@@ -5,7 +5,7 @@ import utils.SessionDataSingleton;
 import java.net.InetAddress;
 import java.util.concurrent.Semaphore;
 
-public class Sender implements Runnable{
+public class Sender {
 
     // Used to avoid polling the stringToSend field for new data to send to the other player's client.
     // When there is no new message to send, Sender's thread sleeps, and is awakened when a new message arrives
@@ -37,9 +37,9 @@ public class Sender implements Runnable{
         return returnString;
     }
 
-    @Override
+    /*@Override
     public void run() {
-        /*try {
+        try {
             InetAddress server = InetAddress.getByName(SessionDataSingleton.getInstance().getRemoteAddress());
             int port = SessionDataSingleton.getInstance().getSendPort();
 
@@ -51,7 +51,7 @@ public class Sender implements Runnable{
             }
         } catch (Exception e) {
 
-        }*/
-    }
+        }
+    }*/
 
 }
