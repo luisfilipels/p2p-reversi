@@ -20,6 +20,7 @@ public class Receiver extends UnicastRemoteObject implements GameInterface {
         super();
     }
 
+    //TODO: These methods probably have to use runLater
     @Override
     public void endTurn() {
         GameControllerSingleton gameController = GameControllerSingleton.getInstance();
