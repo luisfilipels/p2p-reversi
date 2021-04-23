@@ -3,16 +3,34 @@ package networking;
 import utils.SessionDataSingleton;
 
 import java.net.DatagramSocket;
+import java.net.MalformedURLException;
 import java.net.SocketException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 
 public class NetworkHandlerSingleton {
 
     private static NetworkHandlerSingleton instance;
 
-    private Sender sender;
+    GameInterface remote;
+
+    //private Sender sender;
     private Receiver receiver;
 
     private NetworkHandlerSingleton() {
+        SessionDataSingleton userData = SessionDataSingleton.getInstance();
+        try {
+            LocateRegistry.createRegistry(2020);
+
+            receiver = new Receiver();
+            Naming.rebind("//localhost:2020/Game", receiver);
+
+            remote = (GameInterface) Naming.lookup("//" + userData.getRemoteAddress() + ":2020/Game");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         /*try {
             socket = new DatagramSocket(SessionDataSingleton.getInstance().getReceivePort());
             sender = new Sender(socket);
@@ -33,7 +51,7 @@ public class NetworkHandlerSingleton {
         return instance;
     }
 
-    String buildChatMessage(String message) {
+    /*String buildChatMessage(String message) {
         return "chat|" + SessionDataSingleton.getInstance().getUserName() + "|" + message;
     }
 
@@ -43,18 +61,53 @@ public class NetworkHandlerSingleton {
 
     String buildGameMoveMessage(int r, int c) {
         return "game|move|" + r + "," + c + "|" + SessionDataSingleton.getInstance().getUserColor();
-    }
+    }*/
 
     public void sendChatMessageToSender(String message) {
-        sender.setStringToSend(buildChatMessage(message));
+        try {
+            remote.sendChatMessage(SessionDataSingleton.getInstance().getUserName(), message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //sender.setStringToSend(buildChatMessage(message));
     }
 
     public void sendGameEventMessageToSender(String event) {
-        sender.setStringToSend(buildGameEventMessage(event));
+        try {
+            switch (event) {
+                case "endturn":
+                    remote.endTurn();
+                    break;
+                case "undo":
+                    remote.undo();
+                    break;
+                case "restart":
+                    remote.restart();
+                    break;
+                case "defeat":
+                    remote.defeat();
+                    break;
+                case "victory":
+                    remote.victory();
+                    break;
+                case "tie":
+                    remote.tie();
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //sender.setStringToSend(buildGameEventMessage(event));
     }
 
     public void sendGameMoveMessageToSender(int r, int c) {
-        sender.setStringToSend(buildGameMoveMessage(r, c));
+        try {
+            remote.makeMove(r, c, SessionDataSingleton.getInstance().getUserColor());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //sender.setStringToSend(buildGameMoveMessage(r, c));
     }
 
     public void start() {

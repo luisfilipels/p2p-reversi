@@ -4,7 +4,10 @@ import gameLogic.GameControllerSingleton;
 import javafx.application.Platform;
 import main.Controller;
 
-public class Receiver {
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+public class Receiver extends UnicastRemoteObject implements GameInterface {
 
     // Reference to the socket created by NetworkHandlerSingleton
     //DatagramSocket socket;
@@ -13,7 +16,60 @@ public class Receiver {
         this.socket = socket;
     }*/
 
-    void handleChat(String[] parts) {
+    Receiver() throws RemoteException {
+        super();
+    }
+
+    @Override
+    public void endTurn() {
+        GameControllerSingleton gameController = GameControllerSingleton.getInstance();
+        gameController.saveWorkingBoard();
+        gameController.startTurn();
+    }
+
+    @Override
+    public void makeMove(int r, int c, char color) {
+        GameControllerSingleton gameController = GameControllerSingleton.getInstance();
+        gameController.forceSetBoardPosition(r, c, color);
+    }
+
+    @Override
+    public void sendChatMessage(String userName, String message) {
+        Controller.logMessage(userName + ": " + message);
+    }
+
+    @Override
+    public void undo() {
+        GameControllerSingleton gameController = GameControllerSingleton.getInstance();
+        gameController.localUndo();
+    }
+
+    @Override
+    public void restart() {
+        GameControllerSingleton gameController = GameControllerSingleton.getInstance();
+        gameController.closeAllPopups();
+        gameController.restartGame();
+    }
+
+    @Override
+    public void defeat() {
+        GameControllerSingleton gameController = GameControllerSingleton.getInstance();
+        gameController.winGame();
+    }
+
+    @Override
+    public void victory() {
+        GameControllerSingleton gameController = GameControllerSingleton.getInstance();
+        gameController.loseGame();
+    }
+
+    @Override
+    public void tie() {
+        GameControllerSingleton gameController = GameControllerSingleton.getInstance();
+        gameController.tieGame();
+    }
+
+    /*void handleChat(String[] parts) {
         Controller.logMessage(parts[1] + ": " + parts[2]);
     }
 
@@ -71,7 +127,7 @@ public class Receiver {
                 }
             });
         }
-    }
+    }*/
 
     /*@Override
     public void run() {
