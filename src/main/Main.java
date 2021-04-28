@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import networking.NetworkHandlerSingleton;
 
 public class Main extends Application {
 
@@ -16,6 +17,9 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        NetworkHandlerSingleton handler = NetworkHandlerSingleton.getHandler();
+        handler.startServer();
 
         Stage popup = new Stage();
         FXMLLoader loader = new FXMLLoader(

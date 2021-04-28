@@ -94,7 +94,7 @@ public class Controller {
         }
 
         NetworkHandlerSingleton handler = NetworkHandlerSingleton.getHandler();
-        handler.start();
+        handler.startRMI();
 
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();

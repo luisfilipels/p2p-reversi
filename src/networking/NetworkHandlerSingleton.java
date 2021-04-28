@@ -1,5 +1,6 @@
 package networking;
 
+import javafx.application.Platform;
 import utils.SessionDataSingleton;
 
 import java.net.DatagramSocket;
@@ -20,24 +21,27 @@ public class NetworkHandlerSingleton {
     private Receiver receiver;
 
     private NetworkHandlerSingleton() {
-        SessionDataSingleton userData = SessionDataSingleton.getInstance();
+
+    }
+
+    public void startServer() {
         try {
             LocateRegistry.createRegistry(2020);
 
             receiver = new Receiver();
             Naming.rebind("//localhost:2020/Game", receiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void startRMI() {
+        try {
+            SessionDataSingleton userData = SessionDataSingleton.getInstance();
             remote = (GameInterface) Naming.lookup("//" + userData.getRemoteAddress() + ":2020/Game");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /*try {
-            socket = new DatagramSocket(SessionDataSingleton.getInstance().getReceivePort());
-            sender = new Sender(socket);
-            receiver = new Receiver(socket);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }*/
     }
 
     public static NetworkHandlerSingleton getHandler() {
@@ -110,12 +114,12 @@ public class NetworkHandlerSingleton {
         //sender.setStringToSend(buildGameMoveMessage(r, c));
     }
 
-    public void start() {
-        /*t1 = new Thread(sender);
+    /*public void start() {
+        t1 = new Thread(sender);
         t2 = new Thread(receiver);
 
         t1.start();
-        t2.start();*/
-    }
+        t2.start();
+    }*/
 
 }
