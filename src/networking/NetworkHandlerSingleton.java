@@ -17,7 +17,6 @@ public class NetworkHandlerSingleton {
 
     GameServer remote;
 
-    //private Sender sender;
     private Receiver receiver;
     private GameServerImplement server;
 
@@ -67,18 +66,6 @@ public class NetworkHandlerSingleton {
         return instance;
     }
 
-    /*String buildChatMessage(String message) {
-        return "chat|" + SessionDataSingleton.getInstance().getUserName() + "|" + message;
-    }
-
-    String buildGameEventMessage(String messageType) {
-        return "game|" + messageType;
-    }
-
-    String buildGameMoveMessage(int r, int c) {
-        return "game|move|" + r + "," + c + "|" + SessionDataSingleton.getInstance().getUserColor();
-    }*/
-
     public void sendChatMessageToSender(String message) {
         SessionDataSingleton userData = SessionDataSingleton.getInstance();
         try {
@@ -86,7 +73,6 @@ public class NetworkHandlerSingleton {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //sender.setStringToSend(buildChatMessage(message));
     }
 
     public void sendGameEventMessageToSender(String event) {
@@ -115,8 +101,6 @@ public class NetworkHandlerSingleton {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //sender.setStringToSend(buildGameEventMessage(event));
     }
 
     public void sendGameMoveMessageToSender(int r, int c) {
@@ -125,15 +109,6 @@ public class NetworkHandlerSingleton {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //sender.setStringToSend(buildGameMoveMessage(r, c));
     }
-
-    /*public void start() {
-        t1 = new Thread(sender);
-        t2 = new Thread(receiver);
-
-        t1.start();
-        t2.start();
-    }*/
 
 }

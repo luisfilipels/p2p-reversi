@@ -28,13 +28,6 @@ public class GameServerImplement extends UnicastRemoteObject implements GameServ
 
     @Override
     public void makeMove(int r, int c, char color) throws RemoteException {
-        /*if (white == null) {
-            black.makeMove(r, c, color);
-            return;
-        } else if (black == null) {
-            white.makeMove(r, c, color);
-            return;
-        }*/
         if (color == 'w') {
             if (black == null) black = new Receiver();
             black.makeMove(r, c, color);
@@ -46,13 +39,6 @@ public class GameServerImplement extends UnicastRemoteObject implements GameServ
 
     @Override
     public void sendChatMessage(String userName, String message, char sender) throws RemoteException {
-        /*if (white == null) {
-            black.sendChatMessage(userName, message);
-            return;
-        } else if (black == null) {
-            white.sendChatMessage(userName, message);
-            return;
-        }*/
         if (sender == 'w') {
             if (black == null) black = new Receiver();
             black.sendChatMessage(userName, message);
@@ -64,13 +50,6 @@ public class GameServerImplement extends UnicastRemoteObject implements GameServ
 
     @Override
     public void endTurn(char sender) throws RemoteException {
-        /*if (white == null) {
-            black.endTurn();
-            return;
-        } else if (black == null) {
-            white.endTurn();
-            return;
-        }*/
         if (sender == 'w') {
             if (black == null) black = new Receiver();
             black.endTurn();
@@ -82,13 +61,6 @@ public class GameServerImplement extends UnicastRemoteObject implements GameServ
 
     @Override
     public void undo(char sender) throws RemoteException {
-        /*if (white == null) {
-            black.undo();
-            return;
-        } else if (black == null) {
-            white.undo();
-            return;
-        }*/
         if (sender == 'w') {
             if (black == null) black = new Receiver();
             black.undo();
@@ -100,13 +72,6 @@ public class GameServerImplement extends UnicastRemoteObject implements GameServ
 
     @Override
     public void restart(char sender) throws RemoteException {
-        /*if (white == null) {
-            black.restart();
-            return;
-        } else if (black == null) {
-            white.restart();
-            return;
-        }*/
         if (sender == 'w') {
             if (black == null) black = new Receiver();
             black.restart();
@@ -118,13 +83,6 @@ public class GameServerImplement extends UnicastRemoteObject implements GameServ
 
     @Override
     public void defeat(char sender) throws RemoteException {
-        /*if (white == null) {
-            black.defeat();
-            return;
-        } else if (black == null) {
-            white.defeat();
-            return;
-        }*/
         if (sender == 'w') {
             if (black == null) black = new Receiver();
             black.defeat();
@@ -136,13 +94,6 @@ public class GameServerImplement extends UnicastRemoteObject implements GameServ
 
     @Override
     public void victory(char sender) throws RemoteException {
-        /*if (white == null) {
-            black.victory();
-            return;
-        } else if (black == null) {
-            white.victory();
-            return;
-        }*/
         if (sender == 'w') {
             if (black == null) black = new Receiver();
             black.victory();
@@ -154,13 +105,6 @@ public class GameServerImplement extends UnicastRemoteObject implements GameServ
 
     @Override
     public void tie(char sender) throws RemoteException {
-        /*if (white == null) {
-            black.tie();
-            return;
-        } else if (black == null) {
-            white.tie();
-            return;
-        }*/
         if (sender == 'w') {
             if (black == null) black = new Receiver();
             black.tie();
