@@ -15,10 +15,11 @@ public class NetworkHandlerSingleton {
 
     private static NetworkHandlerSingleton instance;
 
-    GameInterface remote;
+    GameServer remote;
 
     //private Sender sender;
     private Receiver receiver;
+    private GameServerImplement server;
 
     private NetworkHandlerSingleton() {
 
@@ -27,18 +28,29 @@ public class NetworkHandlerSingleton {
     public void startServer() {
         try {
             LocateRegistry.createRegistry(2020);
-
-            receiver = new Receiver();
-            Naming.rebind("//localhost:2020/Game", receiver);
+            server = new GameServerImplement();
+            Naming.rebind("//localhost:2020/Game", server);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Servidor local já existe! Continuando");
         }
     }
 
     public void startRMI() {
         try {
             SessionDataSingleton userData = SessionDataSingleton.getInstance();
-            remote = (GameInterface) Naming.lookup("//" + userData.getRemoteAddress() + ":2020/Game");
+            if (server == null) { // server local ja existe. conectar com ele
+                System.out.println("Server is null");
+                remote = (GameServer) Naming.lookup("//localhost:2020/Game");
+            } else { // server local foi criado pois outro nao existia.
+                System.out.println("Server is not null");
+                remote = (GameServer) Naming.lookup("//" + userData.getRemoteAddress() + ":2020/Game");
+            }
+            receiver = new Receiver();
+            if (userData.getUserColor() == 'w') {
+                remote.addWhiteListener(receiver);
+            } else {
+                remote.addBlackListener(receiver);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,8 +80,9 @@ public class NetworkHandlerSingleton {
     }*/
 
     public void sendChatMessageToSender(String message) {
+        SessionDataSingleton userData = SessionDataSingleton.getInstance();
         try {
-            remote.sendChatMessage(SessionDataSingleton.getInstance().getUserName(), message);
+            remote.sendChatMessage(userData.getUserName(), message, userData.getUserColor());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,25 +90,26 @@ public class NetworkHandlerSingleton {
     }
 
     public void sendGameEventMessageToSender(String event) {
+        SessionDataSingleton userData = SessionDataSingleton.getInstance();
         try {
             switch (event) {
                 case "endturn":
-                    remote.endTurn();
+                    remote.endTurn(userData.getUserColor());
                     break;
                 case "undo":
-                    remote.undo();
+                    remote.undo(userData.getUserColor());
                     break;
                 case "restart":
-                    remote.restart();
+                    remote.restart(userData.getUserColor());
                     break;
                 case "defeat":
-                    remote.defeat();
+                    remote.defeat(userData.getUserColor());
                     break;
                 case "victory":
-                    remote.victory();
+                    remote.victory(userData.getUserColor());
                     break;
                 case "tie":
-                    remote.tie();
+                    remote.tie(userData.getUserColor());
                     break;
             }
         } catch (Exception e) {
