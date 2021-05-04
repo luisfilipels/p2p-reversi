@@ -34,23 +34,27 @@ public class NetworkHandlerSingleton {
         }
     }
 
-    public void startRMI() {
+    public void startRMI() throws RemoteException, NotBoundException, MalformedURLException{
+        SessionDataSingleton userData = SessionDataSingleton.getInstance();
+        if (server == null) { // server local ja existe. conectar com ele
+            System.out.println("Server is null");
+            remote = (GameServer) Naming.lookup("//localhost:2020/Game");
+        } else { // server local foi criado pois outro nao existia.
+            System.out.println("Server is not null");
+            remote = (GameServer) Naming.lookup("//" + userData.getRemoteAddress() + ":2020/Game");
+        }
+    }
+
+    public void startReceiver() {
+        SessionDataSingleton userData = SessionDataSingleton.getInstance();
         try {
-            SessionDataSingleton userData = SessionDataSingleton.getInstance();
-            if (server == null) { // server local ja existe. conectar com ele
-                System.out.println("Server is null");
-                remote = (GameServer) Naming.lookup("//localhost:2020/Game");
-            } else { // server local foi criado pois outro nao existia.
-                System.out.println("Server is not null");
-                remote = (GameServer) Naming.lookup("//" + userData.getRemoteAddress() + ":2020/Game");
-            }
             receiver = new Receiver();
             if (userData.getUserColor() == 'w') {
                 remote.addWhiteListener(receiver);
             } else {
                 remote.addBlackListener(receiver);
             }
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }

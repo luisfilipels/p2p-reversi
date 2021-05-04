@@ -1,6 +1,7 @@
 package readData;
 
 import gameLogic.GameControllerSingleton;
+import javafx.scene.text.Text;
 import networking.NetworkHandlerSingleton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,6 +12,10 @@ import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 import utils.SessionDataSingleton;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,12 +23,6 @@ public class Controller {
 
     @FXML
     private TextField userNameField;
-
-    @FXML
-    private TextField inPort;
-
-    @FXML
-    private TextField outPort;
 
     @FXML
     private Button confirmButton;
@@ -36,6 +35,9 @@ public class Controller {
 
     @FXML
     private ToggleButton aidToggle;
+
+    @FXML
+    private Text alertText;
 
     private static final String PATTERN =
             "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -64,27 +66,35 @@ public class Controller {
         userData.setUserName(userNameField.getText().trim());
         userData.setRemoteAddress(remoteIPString);
 
+        NetworkHandlerSingleton handler = NetworkHandlerSingleton.getHandler();
+        int countAttempts = 0;
+        String textToSet = "";
+        while (countAttempts < 2) {
+            try {
+                handler.startRMI();
+                break;
+            } catch (RemoteException e) {
+                textToSet = "Falha na conexão!";
+            } catch (NotBoundException e) {
+                textToSet = "Servidor não existe!";
+            } catch (MalformedURLException e) {
+                countAttempts = 3;
+                textToSet = "URL inválida!";
+            }
+            countAttempts++;
+        }
+        if (countAttempts >= 2) {
+            alertText.setText(textToSet);
+            return;
+        }
+
         if (whiteToggle.isSelected()) {
-            if (outPort.getText().trim().equals("")) userData.setSendPort(1024);
-            else userData.setSendPort(Integer.parseInt(outPort.getText().trim()));
-
-            if (inPort.getText().trim().equals("")) userData.setReceivePort(1025);
-            else userData.setReceivePort(Integer.parseInt(inPort.getText().trim()));
-
             userData.setUserColor('w');
             GameControllerSingleton.getInstance().startTurn();
         } else {
-
-            if (outPort.getText().trim().equals("")) userData.setSendPort(1025);
-            else userData.setSendPort(Integer.parseInt(outPort.getText().trim()));
-
-            if (inPort.getText().trim().equals("")) userData.setReceivePort(1024);
-            else userData.setReceivePort(Integer.parseInt(inPort.getText().trim()));
-
             userData.setUserColor('b');
             GameControllerSingleton.getInstance().localEndTurn();
         }
-
         if (aidToggle.isSelected()) {
             userData.setAidActivated(true);
             GameControllerSingleton.getInstance().getViewController().helpToggle.setSelected(true);
@@ -93,8 +103,7 @@ public class Controller {
             GameControllerSingleton.getInstance().getViewController().helpToggle.setSelected(false);
         }
 
-        NetworkHandlerSingleton handler = NetworkHandlerSingleton.getHandler();
-        handler.startRMI();
+        handler.startReceiver();
 
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
