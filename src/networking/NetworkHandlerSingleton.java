@@ -15,7 +15,7 @@ public class NetworkHandlerSingleton {
 
     private static NetworkHandlerSingleton instance;
 
-    GameServer remote;
+    public GameServer remote;
 
     private Receiver receiver;
     private GameServerImplement server;
@@ -36,10 +36,10 @@ public class NetworkHandlerSingleton {
 
     public void startRMI() throws RemoteException, NotBoundException, MalformedURLException{
         SessionDataSingleton userData = SessionDataSingleton.getInstance();
-        if (server == null) { // server local ja existe. conectar com ele
+        if (server == null) {
             System.out.println("Server is null");
             remote = (GameServer) Naming.lookup("//localhost:2020/Game");
-        } else { // server local foi criado pois outro nao existia.
+        } else {
             System.out.println("Server is not null");
             remote = (GameServer) Naming.lookup("//" + userData.getRemoteAddress() + ":2020/Game");
         }
@@ -74,34 +74,6 @@ public class NetworkHandlerSingleton {
         SessionDataSingleton userData = SessionDataSingleton.getInstance();
         try {
             remote.sendChatMessage(userData.getUserName(), message, userData.getUserColor());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendGameEventMessageToSender(String event) {
-        SessionDataSingleton userData = SessionDataSingleton.getInstance();
-        try {
-            switch (event) {
-                case "endturn":
-                    remote.endTurn(userData.getUserColor());
-                    break;
-                case "undo":
-                    remote.undo(userData.getUserColor());
-                    break;
-                case "restart":
-                    remote.restart(userData.getUserColor());
-                    break;
-                case "defeat":
-                    remote.defeat(userData.getUserColor());
-                    break;
-                case "victory":
-                    remote.victory(userData.getUserColor());
-                    break;
-                case "tie":
-                    remote.tie(userData.getUserColor());
-                    break;
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -65,7 +65,6 @@ public class Receiver extends UnicastRemoteObject implements GameInterface {
             @Override
             public void run() {
                 GameControllerSingleton gameController = GameControllerSingleton.getInstance();
-                gameController.closeAllPopups();
                 gameController.restartGame();
             }
         });

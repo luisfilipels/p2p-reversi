@@ -76,7 +76,7 @@ public class Controller {
             } catch (RemoteException e) {
                 textToSet = "Falha na conexão!";
             } catch (NotBoundException e) {
-                textToSet = "Servidor não existe!";
+                textToSet = "Servidor de nomes não existe no endereço informado!";
             } catch (MalformedURLException e) {
                 countAttempts = 3;
                 textToSet = "URL inválida!";

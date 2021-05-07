@@ -113,7 +113,11 @@ public class Controller {
             // then the end turn button becomes a button for restarting the game.
             System.out.println("Trying to restart game");
             GameControllerSingleton.getInstance().restartGame();
-            NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("restart");
+            try {
+                NetworkHandlerSingleton.getHandler().remote.restart(SessionDataSingleton.getInstance().getUserColor());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else if (gameController.isTurn) {
             gameController.endTurn();
         }
@@ -123,7 +127,11 @@ public class Controller {
     void handleQuitButton() {
         if (statusSquare.getFill() == Color.GREEN || statusSquare.getFill() == Color.RED || statusSquare.getFill() == Color.ORANGE) return;
         gameController.loseGame();
-        NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("defeat");
+        try {
+            NetworkHandlerSingleton.getHandler().remote.defeat(SessionDataSingleton.getInstance().getUserColor());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setStatusToPlaying() {

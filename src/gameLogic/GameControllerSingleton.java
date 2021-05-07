@@ -1,6 +1,5 @@
 package gameLogic;
 
-import javafx.stage.Stage;
 import main.Controller;
 import networking.NetworkHandlerSingleton;
 import utils.CoordinatePair;
@@ -23,10 +22,6 @@ public class GameControllerSingleton {
 
     // Variable used to stop the user from acting when it's not their turn
     public boolean isTurn = false;
-
-    // Used to have  a reference to other stages. When the other player wants to restart the game, with
-    // this list it's possible to remotely close any other popup window that is open
-    private List<Stage> openStages = new ArrayList<>();
 
     private GameControllerSingleton(Controller controller) {
         this.viewController = controller;
@@ -125,16 +120,14 @@ public class GameControllerSingleton {
         return new int[] {countW, countB};
     }
 
-    private boolean nextPlayerCanMove() {
-        char myColor = SessionDataSingleton.getInstance().getUserColor();
-        char otherColor = myColor == 'w' ? 'b' : 'w';
+    private boolean playerCanMove(char color) {
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 if (workingBoard[r][c] != ' ') continue;
                 for (int deltaR = -1; deltaR <= 1; deltaR++) {
                     for (int deltaC = -1; deltaC <= 1; deltaC++) {
                         if (deltaC == 0 && deltaR == 0) continue;
-                        if (findOtherPiece(r, c, deltaR, deltaC, otherColor)) return true;
+                        if (findOtherPiece(r, c, deltaR, deltaC, color)) return true;
                     }
                 }
             }
@@ -147,7 +140,9 @@ public class GameControllerSingleton {
         char boardFullVictory = checkBoardFullVictory();
         if (boardFullVictory != ' ') return boardFullVictory;
 
-        if (nextPlayerCanMove()) return ' ';
+        System.out.println("Starting turn");
+
+        if (playerCanMove('w') && playerCanMove('b')) return ' ';
         else {
             int[] count = getColorCount();
             if (count[0] == count[1]) return 't';
@@ -161,14 +156,45 @@ public class GameControllerSingleton {
     }
 
     public void sendRemoteUndo() {
-        NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("undo");
+        try{
+            NetworkHandlerSingleton.getHandler().remote.undo(SessionDataSingleton.getInstance().getUserColor());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void startTurn() {
-        isTurn = true;
-        viewController.endTurnButton.setDisable(false);
-        viewController.endTurnButton.setText("Encerrar rodada");
-        viewController.setStatusToPlaying();
+        char myColor = SessionDataSingleton.getInstance().getUserColor();
+        if (!playerCanMove(myColor)) {
+            char victorious = checkVictory();
+            if (victorious == myColor) {
+                winGame();
+                try {
+                    NetworkHandlerSingleton.getHandler().remote.victory(myColor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (victorious == 't') {
+                tieGame();
+                try {
+                    NetworkHandlerSingleton.getHandler().remote.tie(myColor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                loseGame();
+                try {
+                    NetworkHandlerSingleton.getHandler().remote.defeat(myColor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            isTurn = true;
+            viewController.endTurnButton.setDisable(false);
+            viewController.endTurnButton.setText("Encerrar rodada");
+            viewController.setStatusToPlaying();
+        }
     }
 
     public void localEndTurn() {
@@ -183,25 +209,11 @@ public class GameControllerSingleton {
         viewController.endTurnButton.setText("Aguardando");
         viewController.endTurnButton.setDisable(true);
         saveWorkingBoard();
-        char victorious = checkVictory();
-        if (victorious == ' ') {
-            viewController.setStatusToWaiting();
-            NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("endturn");
-        }
-        else {
-            if (victorious == 't') {
-                tieGame();
-                NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("tie");
-                return;
-            }
-            char myColor = SessionDataSingleton.getInstance().getUserColor();
-            if (victorious == myColor) {
-                winGame();
-                NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("victory");
-            } else {
-                loseGame();
-                NetworkHandlerSingleton.getHandler().sendGameEventMessageToSender("defeat");
-            }
+        viewController.setStatusToWaiting();
+        try {
+            NetworkHandlerSingleton.getHandler().remote.endTurn(SessionDataSingleton.getInstance().getUserColor());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -212,13 +224,6 @@ public class GameControllerSingleton {
     public void winGame() { viewController.setStatusToVictory(); }
 
     public void tieGame() { viewController.setStatusToTie(); }
-
-    public void closeAllPopups() {
-        for (Stage s : openStages) {
-            if (s != null) s.close();
-        }
-        openStages.clear();
-    }
 
     public void restartGame() {
         hardResetAllBoards();
@@ -257,7 +262,10 @@ public class GameControllerSingleton {
         while (r >= 0 && r < 8 && c >= 0 && c < 8) {
             if (workingBoard[r][c] == otherColor) countOtherColor++;
             if (workingBoard[r][c] == ' ') return false;
-            if (workingBoard[r][c] == expectedColor && countOtherColor >= 1) return true;
+            if (workingBoard[r][c] == expectedColor && countOtherColor >= 1) {
+                System.out.println(expectedColor + " can make movement at position " + startR + " " + startC);
+                return true;
+            }
             r += deltaR;
             c += deltaC;
         }

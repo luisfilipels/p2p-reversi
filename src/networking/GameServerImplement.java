@@ -2,8 +2,6 @@ package networking;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameServerImplement extends UnicastRemoteObject implements GameServer {
 
